@@ -1,0 +1,39 @@
+{
+  "publish": true,
+  "signerIds": [
+    "10626"
+  ],
+  "unitIds": [
+    "10602"
+  ],
+  "decisionTypeId": "Β.1.3",
+  "subject": "ΑΠΟΦΑΣΗ ΑΝΑΛΗΨΗΣ ΥΠΟΧΡΕΩΣΗΣ",
+  "thematicCategoryIds": [
+    "20"
+  ],
+  "protocolNumber": "2014/1/001",
+  "issueDate": "2014-05-30T00:00:00.000Z",
+  "organizationId": "10599",
+  "extraFieldValues": {
+    "financialYear": 2014,
+    "budgettype": "Τακτικός Προϋπολογισμός",
+    "entryNumber": "1000",
+    "partialead": false,
+    "recalledExpenseDecision": false,
+    "amountWithVAT": {
+      "amount": 150,
+      "currency": "EUR"
+    },
+    "amountWithKae": [
+      {
+        "kae": "1234",
+        "amountWithVAT": 100
+      },
+      {
+        "kae": "4321",
+        "amountWithVAT": 50
+      }
+    ],
+    "relatedDecisions": []
+  }
+}
