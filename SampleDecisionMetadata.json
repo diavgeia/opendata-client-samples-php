@@ -1,7 +1,7 @@
 {
   "publish": true,
   "signerIds": [
-    "10626"
+    "10911"
   ],
   "unitIds": [
     "10602"
@@ -12,7 +12,7 @@
     "20"
   ],
   "protocolNumber": "2014/1/001",
-  "issueDate": "2014-05-30T00:00:00.000Z",
+  "issueDate": "2014-06-20T00:00:00.000Z",
   "organizationId": "10599",
   "extraFieldValues": {
     "financialYear": 2014,
