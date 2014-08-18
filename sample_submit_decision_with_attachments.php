@@ -7,7 +7,7 @@ $client = new OpendataClient();
 $client->setAuth("10599_api", "User@10599");
 
 $metadataJsonString = file_get_contents("SampleDecisionMetadata.json");
-$metadata = json_decode($metadataJsonString);
+$metadata = json_decode($metadataJsonString, true);
 $pdf = "SampleDecision.pdf";
 
 // Create attachments array. Each item is (file, mimetype, description)

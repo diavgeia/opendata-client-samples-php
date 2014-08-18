@@ -55,8 +55,12 @@ class OpendataClient {
         }
     }
     
-    public function submitDecision($metadata, $pdf, $attachments=array()) {            
+    public function submitDecision($metadata, $pdf, $attachments=array(), $recipients=array()) {            
         $req = $this->_preparePostRequest('/decisions');
+        
+        if ($recipients !== null && (sizeof($recipients) > 0)) {
+            $metadata = $this->_addRecipients($metadata, $recipients);
+        }
         
         // Add metadata and decision document
         $req->addPostData('metadata', json_encode($metadata));
@@ -112,6 +116,36 @@ class OpendataClient {
         }
     }
     
+    public function submitRevocationRequest($ada, $comment) {
+        if ($ada == null OR $comment == null) {
+            throw new Exception("The ADA and the comment must be specified");
+        }
+        
+        $req = $this->_preparePostRequest('/decisions/requests/revocations');
+        
+        $requestData = array(
+            "ada" => $ada,
+            "comment" => $comment
+        );
+        
+        $requestDataJsonString = json_encode($requestData);
+        
+        $req->addHeader('Content-Type', 'application/json');
+        $req->setBody($requestDataJsonString);
+        
+        if (!PEAR::isError($req->sendRequest())) {
+            $responseCode = $req->getResponseCode();
+            $responseBody = $req->getResponseBody();
+            $data = null;
+            if ($responseCode === 200 || $responseCode === 400) {
+                $data = json_decode($responseBody, true);
+            } 
+            return new ApiResponse($responseCode, $data);
+        } else {
+            throw new Exception("Error while submitting revocation request");
+        }
+    }
+    
     
     // PRIVATE ////////////////////
     
@@ -148,6 +182,15 @@ class OpendataClient {
             $req->addFile('attachments', $attachmentFilenames, $attachmentContentTypes);
             $req->addPostData('attachmentDescr', json_encode($attachmentDescriptions));
         }
+    }
+    
+    private function _addRecipients($metadata, $recipients=array()) {
+        if ($recipients !== null) {
+            $metadata['actions'] = array(
+                array("name"=>"notifyRecipients", "args"=>$recipients)
+            );
+        }
+        return $metadata;
     }
 }
 
