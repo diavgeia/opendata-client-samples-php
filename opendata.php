@@ -87,17 +87,32 @@ class OpendataClient {
         }
     }
     
-    public function editDecision($ada, $metadata, $pdf=null) {
+    public function editDecision($ada, $metadata, $pdf=null, $attachments=array(), $attachmentsToRemove=array()) {
         if ($ada == null) {
             throw new Exception("The ADA must be specified");
         }
         
         $req = $this->_preparePostRequest('/decisions/' . $ada);
         
+        $isCorrectedCopy = (array_key_exists('correctedCopy', $metadata)) && ($metadata['correctedCopy'] === TRUE);
+        $hasAttachments = ($attachments != null) && (count($attachments) > 0);
+        $isMultipart = ($isCorrectedCopy || $hasAttachments);
+        
+        if ($attachmentsToRemove) {
+            $metadata = $this->_setAttachmentsToRemove($req, $metadata, $isMultipart, $attachmentsToRemove);
+        }
+        
         $metadataJsonString = json_encode($metadata);
-        if ((array_key_exists('correctedCopy', $metadata)) && ($metadata['correctedCopy'] === TRUE)) {
-            $req->addFile('decisionFile', $pdf, 'application/pdf' );
+        if ($isMultipart) {
             $req->addPostData('metadata', $metadataJsonString);
+            
+            if ($isCorrectedCopy) {
+                $req->addFile('decisionFile', $pdf, 'application/pdf' );
+            }
+            
+            if ($hasAttachments) {
+                $this->_addAttachments($req, $attachments);
+            }
         } else {
             $req->addHeader('Content-Type', 'application/json');
             $req->setBody($metadataJsonString);
@@ -189,6 +204,15 @@ class OpendataClient {
             $metadata['actions'] = array(
                 array("name"=>"notifyRecipients", "args"=>$recipients)
             );
+        }
+        return $metadata;
+    }
+    
+    private function _setAttachmentsToRemove($req, $metadata, $isMultipart, $attachmentsToRemove=array()) {
+        if ($isMultipart) {
+            $req->addPostData('attachmentsToRemove', json_encode($attachmentsToRemove));
+        } else {
+            $metadata['attachments'] = array("remove" => $attachmentsToRemove);
         }
         return $metadata;
     }
